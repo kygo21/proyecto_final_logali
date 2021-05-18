@@ -1,0 +1,54 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"  xmlns:form="sap.ui.layout.form">
+		<form:SimpleForm
+				title="1. {i18n>tipoEmpleado}"
+				minWidth="1024"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>tipo}"/>
+				<Text text="{=${/_tipoEmpleado} === 'interno' ? ${i18n>interno} : ${/_tipoEmpleado} === 'autonomo' ? ${i18n>autonomo} : ${i18n>gerente}}"/>
+				<Link press="editStepOne" text="{i18n>editar}" />
+			</form:content>
+		</form:SimpleForm>
+		
+		<form:SimpleForm
+				title="2. {i18n>datosEmpleado}"
+				minWidth="1024"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>nombreDE}"/>
+				<Text text="{/_nombreEmpleado}"/>
+				<Label text="{i18n>apellidosDE}"/>
+				<Text text="{/_apellidoEmpleado}"/>
+				<Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>CIF} : ${i18n>dniDE}}"/>
+				<Text  text="{/_documentoIdentidad}"/>
+				<Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>precioDiarioDE} : ${i18n>saldoBrutoAnual}}"/>
+				<Text  text="{/_salario}"/>
+				<Label text="{i18n>fechaIncorporacionDE}"/>
+				<Text  text="{path:'/FechaCreacion',type:'sap.ui.model.type.Date'}"/>
+				<Link press="editStepTwo" text="{i18n>editar}"/>
+			</form:content>
+		</form:SimpleForm>
+		
+		<form:SimpleForm
+				title="3. {i18n>infoAdicional}"
+				minWidth="1024"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>comentariosDE}"/>
+				<Text text="{/Comentarios}"/>
+				<Label text="{i18n>documentos}"/>
+				<Text text="{/_numFiles} {i18n>ficheros}"/>
+				<Label></Label>
+				<!--<List items="{/_files}">
+					<items>
+						<StandardListItem title="{DocName}"></StandardListItem>
+					</items>
+				</List>-->
+				<Link press="editStepThree" text="{i18n>editar}" />
+			</form:content>
+		</form:SimpleForm>
+		
+</core:FragmentDefinition>

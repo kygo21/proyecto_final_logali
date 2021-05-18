@@ -1,0 +1,101 @@
+<mvc:View controllerName="jimmy.HTML5Module.controller.CrearEmpleado" 
+            xmlns:mvc="sap.ui.core.mvc" 
+            displayBlock="true" 
+            xmlns="sap.m"
+            xmlns:form="sap.ui.layout.form"
+            xmlns:core="sap.ui.core">
+	<Shell id="shell">
+        <NavContainer id="wizardNavContainer">
+            <pages>
+                <Page showHeader="false">
+                    <content>
+                        <Wizard id="CreateEmpleadoWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompleteHandler">
+                            <WizardStep id="TipoEmpleadoStep1" title="{i18n>tipoEmpleado}" validated="true">
+                                <MessageStrip class="sapUiSmallMarginBottom" text="{i18n>notaTipoEmpleado}"/>
+                                <HBox alignItems="Center" justifyContent="Center" width="100%">
+                                    <SegmentedButton width="320px" selectionChange="toStep2" items="{jsonTipoEmpleado>/ListTipoEmpleado}">
+                                        <items>
+											<SegmentedButtonItem icon="{jsonTipoEmpleado>Icon}" text="{jsonTipoEmpleado>Text}" key="{jsonTipoEmpleado>Key}"/>
+										</items>
+                                    </SegmentedButton>
+                                </HBox>
+                            </WizardStep>
+                            <WizardStep id="DatosEmpleadoStep2" title="{i18n>datosEmpleado}" validated="false" activate="onValidacionDatosEmpleado">
+                                <MessageStrip class="sapUiSmallMarginBottom" text="{i18n>notaDatosEmpleado}"/>
+                                <form:SimpleForm editable="true">
+                                    <Label text="{i18n>nombreDE}" required="true"/>
+                                    <Input id="InNombreEmpleado" valueState="{/_nombreEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_nombreEmpleado}"/>
+                                    <Label text="{i18n>apellidosDE}" required="true"/>
+                                    <Input id="InApellidosEmpleado" valueState="{/_apellidosEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_apellidoEmpleado}"/>
+                                    <Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>CIF} : ${i18n>dniDE}}" required="true"/>
+                                    <Input id="InDocumentoEmpleado" required="true" valueState="{/_documentoEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_documentoIdentidad}"/>
+                                    <Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>precioDiarioDE} : ${i18n>saldoBrutoAnual}}"/>
+                                    <VBox>
+									    <Slider value="{/_salario}"
+														min="12000" 
+														max="80000"
+														step="1000" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true"
+														 width="100%" progress="false" class="sapUiSmallMarginBottom" 
+														 visible="{=  ${/_tipoEmpleado} === 'INT'}">
+										    <ResponsiveScale tickmarksBetweenLabels="100"/>
+										</Slider>
+										<Slider value="{/_salario}"
+														min="100" 
+														max="2000"
+														step="100" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true"
+														 width="100%" progress="false" class="sapUiSmallMarginBottom"
+														 visible="{=  ${/_tipoEmpleado} === 'AUT'}">
+											<ResponsiveScale tickmarksBetweenLabels="100"/>
+										</Slider>
+										<Slider value="{/_salario}"
+														min="50000" 
+														max="200000"
+														step="1000" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true"
+														 width="100%" progress="false" class="sapUiSmallMarginBottom"
+														 visible="{=  ${/_tipoEmpleado} === 'GER'}">
+											<ResponsiveScale tickmarksBetweenLabels="100"/>
+										</Slider>
+									</VBox>
+                                    <Label text="{i18n>fechaIncorporacionDE}"/>
+   									<DatePicker id="DPFechaIncorporacion" displayFormat="short" dateValue="{/FechaCreacion}"/>
+                                </form:SimpleForm>
+                            </WizardStep>
+                            <WizardStep id="InfoAdicionalStep" title="{i18n>infoAdicional}" validated="true">
+                                <MessageStrip text="{i18n>notaInfoAdicional}"/>
+                                <Label text="{i18n>comentariosDE}"/>
+                                <TextArea width="100%" value="{/Comentarios}"/>
+                                <UploadCollection 
+                                    id="UploadCollectionDocs"
+                                    maximumFilenameLength="55"
+                                    maximumFileSize="10"
+                                    multiple="true"
+                                    sameFilenameAllowed="true"
+                                    instantUpload="false"
+                                    change="onChange"
+                                    beforeUploadStarts="onBeforeUploadStarts"
+                                    noDataDescription="{i18n>arrastrarFicheros}"
+                                />
+                            </WizardStep>                        
+                        </Wizard>                        
+                    </content>
+                    <footer>
+                        <Toolbar>
+                            <ToolbarSpacer/>
+                            <Button text="{i18n>cancelarBtn}" press="onCancelar" type="Reject"/>
+                        </Toolbar>
+                    </footer>
+                </Page>
+                <Page id="ResumenPage" title="{i18n>resumen}">
+				    <core:Fragment fragmentName="jimmy.HTML5Module.fragment.ResumenPage" type="XML"/>
+					    <footer>
+						    <Toolbar>
+							    <ToolbarSpacer/>
+								<Button text="{i18n>guardarBtn}" press="onGuardarEmpleado" type="Accept"/>
+								<Button text="{i18n>cancelarBtn}" press="onCancelar" type="Reject"/>
+							</Toolbar>
+						</footer>
+                </Page>
+            </pages>
+        </NavContainer>
+    </Shell>
+</mvc:View>

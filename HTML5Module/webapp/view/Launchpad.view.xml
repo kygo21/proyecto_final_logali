@@ -1,0 +1,25 @@
+<mvc:View controllerName="jimmy.HTML5Module.controller.Launchpad" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	<Shell id="shell">
+		<App id="app">
+			<pages>
+				<Page id="page" title="{i18n>title}">
+                    <content>
+                        <Panel headerText="{i18n>empleadosText}" expandable="true" expanded="true">
+                            <GenericTile headerImage="sap-icon://add-employee" press="navToCrearEmpleadoView" header="{i18n>crearEmpleadoTile}" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout">
+                                <TileContent footer="{i18n>descrCrearEmpleadoTile}"/>
+                            </GenericTile>                  
+                            <GenericTile headerImage="sap-icon://employee-lookup" press="navToVerEmpleadoView" header="{i18n>verEmpleadoTile}" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout">
+                                <TileContent footer="{i18n>descrVerEmpleadoTile}"/>
+                            </GenericTile>
+                        </Panel>
+                        <Panel headerText="{i18n>pedidosText}" expandable="true" expanded="true">
+                            <GenericTile headerImage="sap-icon://signature" press="navToCrearEmpleadoView" header="{i18n>firmarPedidoTile}" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout">
+                                <TileContent footer="{i18n>descrFirmarPedidoTile}"/>
+                            </GenericTile>
+                        </Panel>                                              
+                    </content>
+				</Page>
+			</pages>
+		</App>
+	</Shell>
+</mvc:View>

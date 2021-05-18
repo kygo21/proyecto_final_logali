@@ -1,0 +1,19 @@
+{
+    "ListTipoEmpleado": [
+        {
+            "Key": "INT",
+            "Text": "Interno",
+            "Icon": "sap-icon://employee-pane"
+        },
+        {
+            "Key": "AUT",
+            "Text": "Autónomo",
+            "Icon": "sap-icon://employee"
+        },
+        {
+            "Key":  "GER",
+            "Text": "Gerente",
+            "Icon": "sap-icon://manager"
+        }
+    ]
+}

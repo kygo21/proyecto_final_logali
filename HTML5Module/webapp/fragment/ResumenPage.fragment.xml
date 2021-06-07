@@ -7,7 +7,7 @@
 			<form:content>
 				<Label text="{i18n>tipo}"/>
 				<Text text="{=${/_tipoEmpleado} === 'interno' ? ${i18n>interno} : ${/_tipoEmpleado} === 'autonomo' ? ${i18n>autonomo} : ${i18n>gerente}}"/>
-				<Link press="editStepOne" text="{i18n>editar}" />
+				<Link press="editarPaso1" text="{i18n>editar}" />
 			</form:content>
 		</form:SimpleForm>
 		
@@ -18,16 +18,16 @@
 				layout="ResponsiveGridLayout">
 			<form:content>
 				<Label text="{i18n>nombreDE}"/>
-				<Text text="{/_nombreEmpleado}"/>
+				<Text text="{/FirstName}"/>
 				<Label text="{i18n>apellidosDE}"/>
-				<Text text="{/_apellidoEmpleado}"/>
+				<Text text="{/LastName}"/>
 				<Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>CIF} : ${i18n>dniDE}}"/>
-				<Text  text="{/_documentoIdentidad}"/>
+				<Text  text="{/Dni}"/>
 				<Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>precioDiarioDE} : ${i18n>saldoBrutoAnual}}"/>
 				<Text  text="{/_salario}"/>
 				<Label text="{i18n>fechaIncorporacionDE}"/>
-				<Text  text="{path:'/FechaCreacion',type:'sap.ui.model.type.Date'}"/>
-				<Link press="editStepTwo" text="{i18n>editar}"/>
+				<Text  text="{path:'/CreationDate',type:'sap.ui.model.type.Date'}"/>
+				<Link press="editarPaso2" text="{i18n>editar}"/>
 			</form:content>
 		</form:SimpleForm>
 		
@@ -38,16 +38,16 @@
 				layout="ResponsiveGridLayout">
 			<form:content>
 				<Label text="{i18n>comentariosDE}"/>
-				<Text text="{/Comentarios}"/>
+				<Text text="{/Comments}"/>
 				<Label text="{i18n>documentos}"/>
 				<Text text="{/_numFiles} {i18n>ficheros}"/>
 				<Label></Label>
-				<!--<List items="{/_files}">
+				<List items="{/_files}">
 					<items>
 						<StandardListItem title="{DocName}"></StandardListItem>
 					</items>
-				</List>-->
-				<Link press="editStepThree" text="{i18n>editar}" />
+				</List>
+				<Link press="editarPaso3" text="{i18n>editar}" />
 			</form:content>
 		</form:SimpleForm>
 		

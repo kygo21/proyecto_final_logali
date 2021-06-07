@@ -24,11 +24,11 @@
                                 <MessageStrip class="sapUiSmallMarginBottom" text="{i18n>notaDatosEmpleado}"/>
                                 <form:SimpleForm editable="true">
                                     <Label text="{i18n>nombreDE}" required="true"/>
-                                    <Input id="InNombreEmpleado" valueState="{/_nombreEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_nombreEmpleado}"/>
+                                    <Input id="InNombreEmpleado" valueState="{/_nombreEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/FirstName}"/>
                                     <Label text="{i18n>apellidosDE}" required="true"/>
-                                    <Input id="InApellidosEmpleado" valueState="{/_apellidosEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_apellidoEmpleado}"/>
+                                    <Input id="InApellidosEmpleado" valueState="{/_apellidosEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/LastName}"/>
                                     <Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>CIF} : ${i18n>dniDE}}" required="true"/>
-                                    <Input id="InDocumentoEmpleado" required="true" valueState="{/_documentoEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/_documentoIdentidad}"/>
+                                    <Input id="InDocumentoEmpleado" required="true" valueState="{/_documentoEmpleadoState}" liveChange="onValidacionDatosEmpleado" value="{/Dni}"/>
                                     <Label text="{= ${/_tipoEmpleado} === 'AUT' ? ${i18n>precioDiarioDE} : ${i18n>saldoBrutoAnual}}"/>
                                     <VBox>
 									    <Slider value="{/_salario}"
@@ -57,22 +57,23 @@
 										</Slider>
 									</VBox>
                                     <Label text="{i18n>fechaIncorporacionDE}"/>
-   									<DatePicker id="DPFechaIncorporacion" displayFormat="short" dateValue="{/FechaCreacion}"/>
+   									<DatePicker id="DPFechaIncorporacion" displayFormat="short" dateValue="{/CreationDate}"/>
                                 </form:SimpleForm>
                             </WizardStep>
-                            <WizardStep id="InfoAdicionalStep" title="{i18n>infoAdicional}" validated="true">
+                            <WizardStep id="AdjuntosStep2" title="{i18n>infoAdicional}" validated="true">
                                 <MessageStrip text="{i18n>notaInfoAdicional}"/>
                                 <Label text="{i18n>comentariosDE}"/>
-                                <TextArea width="100%" value="{/Comentarios}"/>
+                                <TextArea width="100%" value="{/Comments}"/>
                                 <UploadCollection 
                                     id="UploadCollectionDocs"
                                     maximumFilenameLength="55"
                                     maximumFileSize="10"
                                     multiple="true"
+                                    uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
                                     sameFilenameAllowed="true"
                                     instantUpload="false"
-                                    change="onChange"
-                                    beforeUploadStarts="onBeforeUploadStarts"
+                                    change="onChangeAttachment"
+                                    beforeUploadStarts="onBeforeUploadStart"
                                     noDataDescription="{i18n>arrastrarFicheros}"
                                 />
                             </WizardStep>                        
@@ -81,7 +82,7 @@
                     <footer>
                         <Toolbar>
                             <ToolbarSpacer/>
-                            <Button text="{i18n>cancelarBtn}" press="onCancelar" type="Reject"/>
+                            <Button text="{i18n>cancelarBtn}" press="onCancelToLaunchpad" type="Reject"/>
                         </Toolbar>
                     </footer>
                 </Page>

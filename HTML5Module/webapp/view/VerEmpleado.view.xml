@@ -14,7 +14,7 @@
                 </Toolbar>
                 <List itemPress="onSeleccionarEmpleado" items="{ path: 'oDataModel>/Users', 
                                                                  filters: [
-                                                                            {path: 'SapId', operator: 'EQ', value1: 'training@logaligroup.com'}
+                                                                            {path: 'SapId', operator: 'EQ', value1: 'jim.moreno21@gmail.com'}
                                                                         ]
                                                                 }">
                     <items>

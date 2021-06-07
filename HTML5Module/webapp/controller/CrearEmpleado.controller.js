@@ -1,13 +1,19 @@
 // @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/json/JSONModel"
+    "sap/ui/model/json/JSONModel",
+    "sap/m/MessageBox",
+    "sap/ui/core/UIComponent",
+    "sap/m/UploadCollectionParameter"
 ],
 	/**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      * @param {typeof sap.ui.model.json.JSONModel} JSONModel
+     * @param {typeof sap.m.MessageBox} MessageBox
+     * @param {typeof sap.ui.core.UIComponent} UIComponent
+     * @param {typeof sap.m.UploadCollectionParameter} UploadCollectionParameter
      */
-    function (Controller, JSONModel) {
+    function (Controller, JSONModel, MessageBox, UIComponent, UploadCollectionParameter) {
         "use strict";
 
         var tipoEmpleadoSelec;
@@ -24,6 +30,41 @@ sap.ui.define([
             this._wizard.goToStep(oFirstStep);
             oFirstStep.setValidated(false);
 
+        };
+
+        //Función que se ejecuta por cada fichero que se va a subir a SAP
+        // Se debe de agregar el parámetro cabecera "slug" con el valor "id de sap del alumno", id del nuevo usuario separado por ;
+
+        function onBeforeUploadStart(oEvent){
+
+            var oCustomerHeaderSlug = new UploadCollectionParameter({
+                                        name: "slug",
+                                        value: this.getOwnerComponent().SapId+";"+this.newUser+","+oEvent.getParameter("fileName")
+                                    });
+            
+            oEvent.getParameters().addHeaderParameter(oCustomerHeaderSlug);
+
+        };
+
+        function onStartUpload(ioNum){
+
+            var that = this;
+            var oUploadCollection = that.byId("UploadCollectionDocs");
+            oUploadCollection.upload();
+
+        };
+
+        //Función que se ejecuta para cargar el adjunto en el uploadCollection
+        //Se agrega el parámetro de cabecera x-csrf-token con el valor del token del modelo
+        //Es obligatorio para poder guardar en SAP
+        function onChangeAttachment(oEvent){
+            var oUploadCollection = oEvent.getSource();
+            // Header Token
+            var oCustomerHeaderToken = new UploadCollectionParameter({
+                name: "x-csrf-token",
+                value: this.getView().getModel("oDataModel").getSecurityToken()
+            });
+            oUploadCollection.addHeaderParameter(oCustomerHeaderToken);
         };
 
         function toStep2(oEvent) {
@@ -64,7 +105,7 @@ sap.ui.define([
 
             this._model.setData({
                 _tipoEmpleado: textButtonSel,
-                Tipo: tipo,
+                Type: tipo,
                 _salario: salario,
                 _nombreEmpleadoState: "Error",
                 _apellidosEmpleadoState: "Error",
@@ -151,6 +192,10 @@ sap.ui.define([
             }else{
                 this._wizard.validateStep(this.byId("DatosEmpleadoStep2"));
             };
+
+            if(callback){
+                callback(isValid);
+            }
         };
         
         //Función al dar en el botón verificar
@@ -169,19 +214,112 @@ sap.ui.define([
 
                     if(numeroFiles>0){
                         let arrayFiles = [];
-                        for(let i in arrayFiles){
+                        for(let i in files){
                             arrayFiles.push({DocName:files[i].getFileName(),MimeType:files[i].getMimeType()});
                         }
+                        this._model.setProperty("/_files",arrayFiles);
                     }else{
                         this._model.setProperty("/_files",[]);
                     }
 
                 }else{
-                    alert("dasdasdas");
                     this._wizard.goToStep(this.byId("DatosEmpleadoStep2"));
                 }
             }.bind(this)); 
-        }
+        };
+
+        function onCancelToLaunchpad(){
+            MessageBox.confirm(this.oView.getModel("i18n").getResourceBundle().getText("qCancelarCreaUsuario"),{
+                onClose : function(oAction){
+                    if(oAction === "OK"){
+                        //Regresamos al menú inicial
+                        //Se obtiene los Routers
+                        var oRouter = UIComponent.getRouterFor(this);
+                        //navegar hacia el Router Launchpad
+                        oRouter.navTo("Launchpad",{},true);
+                    }
+                }.bind(this)
+            });
+        };
+
+        //función genérica para editar el paso
+        function _editarPaso(step){
+            let wizardNavContainer = this.byId("wizardNavContainer");
+            //Se añade un function al evento afterNavigate ya que se necesita
+            //que la función se ejecute una vez que se haya navegado a la vista principal
+            let fnAfterNavigate = function(){
+                this._wizard.goToStep(this.byId(step));
+                //Se quita la función para que no se vuelva a jecutar al volver a navegar
+                wizardNavContainer.detachAfterNavigate(fnAfterNavigate);                
+            }.bind(this);
+
+            wizardNavContainer.attachAfterNavigate(fnAfterNavigate);
+            wizardNavContainer.back();
+        };
+
+        function editarPaso1(){
+            _editarPaso.bind(this)("TipoEmpleadoStep1");
+        };
+
+        function editarPaso2(){
+            _editarPaso.bind(this)("DatosEmpleadoStep2");
+        };
+
+        function editarPaso3(){
+            _editarPaso.bind(this)("AdjuntosStep2");
+        };
+
+        function onGuardarEmpleado(){
+
+            var json = this.getView().getModel().getData();
+            var body = {};
+
+            //Obtener los campos que no empiecen por "_", para enviarlos 
+            for(var i in json){
+                if(i.indexOf("_") !== 0){
+                    body[i] = json[i];
+                }
+            };
+
+            body.SapId = this.getOwnerComponent().SapId;
+
+            body.UserToSalary = [
+                                    {
+                                        Ammount: parseFloat(json._salario).toString(),
+                                        Comments: json.Comentarios,
+                                        Waers: "EUR"
+
+                                    }
+                                ];
+            this.getView().setBusy(true);
+
+            this.getView().getModel("oDataModel").create("/Users", body, {
+                success: function(data){
+                    this.getView().setBusy(false);
+                    //Se guarda el nuevo usuario
+                    this.newUser = data.EmployeeId;
+                    MessageBox.information(this.oView.getModel("i18n").getResourceBundle().getText("empleadoNuevo") + ":" + this.newUser,{
+                        onClose: function(){
+                            //Se vuelve al wizard para que vuelva a entrar a la app
+                            var wizardNavContainer = this.byId("wizardNavContainer");
+                            wizardNavContainer.back();
+                            //Regresamos al menú principal
+                            //Obtenemos el conjunto de routers del programa
+                            var oRouter = UIComponent.getRouterFor(this);
+                            //Navegar al router Launchpad
+                            oRouter.navTo("Launchpad",{},true);
+                        }.bind(this)
+                    });
+                    //Se llama a la función upload del uploadCollection
+                    this.onStartUpload();
+                }.bind(this),
+                error: function(){
+                    this.getView().setBusy(false);
+                }.bind(this)
+            });
+
+
+        };
 
         function onInit() {
 
@@ -200,6 +338,14 @@ sap.ui.define([
         CrearEmpleadodMain.prototype.toStep2 = toStep2;
         CrearEmpleadodMain.prototype.onValidacionDatosEmpleado = onValidacionDatosEmpleado;
         CrearEmpleadodMain.prototype.wizardCompleteHandler = wizardCompleteHandler;
+        CrearEmpleadodMain.prototype.onCancelToLaunchpad = onCancelToLaunchpad;
+        CrearEmpleadodMain.prototype.editarPaso1 = editarPaso1;
+        CrearEmpleadodMain.prototype.editarPaso2 = editarPaso2;
+        CrearEmpleadodMain.prototype.editarPaso3 = editarPaso3;
+        CrearEmpleadodMain.prototype.onGuardarEmpleado = onGuardarEmpleado;
+        CrearEmpleadodMain.prototype.onBeforeUploadStart = onBeforeUploadStart;
+        CrearEmpleadodMain.prototype.onStartUpload = onStartUpload;
+        CrearEmpleadodMain.prototype.onChangeAttachment = onChangeAttachment;
 
         return CrearEmpleadodMain;
 
